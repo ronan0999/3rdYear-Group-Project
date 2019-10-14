@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register page</title>
+</head>
+<body>
+    <h1>Mediscreen Registration</h1>
+    <a href="url_for('root')">Homepage</a>
+    <!--<a href="url_for('register')">Login page</a>-->
+    <form method="GET" target="_blank" name="registration" id="registration">
+        <label><input type="radio" name="Profession" value="GP">GP</label>
+        <label><input type="radio" name="Profession" value="insurance">insurance</label>
+        <p><label>First Name:</label><input type="text" name="First Name"></p>
+        <p><label>Last Name:</label><input type="text" name="lastName"></p>
+        <p><label>Email:</label><input type="text" name="Email"></p>
+        <p><label>Phone:</label><input type="text" name="Phone"></p>
+        <p><label>Password:</label><input type="text" name="Password"></p>
+    </form>
+    <p>
+        <!--<input type="submit" value="registration">-->
+        <!--<input type="reset" value="cancel">-->
+        <button type="submit" name="submit" form="registration">Register</button>
+        <button type="button" name="cancel">Cancel</button>
+    </p>
+</body>
+</html>
