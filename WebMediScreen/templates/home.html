@@ -7,11 +7,18 @@
 
 <body>
     <header>
-        <h2>Welcome to MediWeb</h2>
         <!--<button type="button">Login</button>-->
-        <a href="{{url_for('login')}}">Login</a>
+        <!--<a href="{{url_for('login')}}">Login</a>-->
         <!--<button type="button">Register</button>-->
-        <a href="{{url_for('register')}}">Register</a>
+        <p>
+            <h2>Welcome to MediWeb</h2>
+            {% if email %}
+                <p>{{email}}</p>
+            {% endif %}
+            <a href="{{url_for('logout')}}">Logout</a>
+        </p>
+
+        <!--<a href="{{url_for('register')}}">Register</a>-->
     </header>
     <main>
         <p>Medical News Section</p>

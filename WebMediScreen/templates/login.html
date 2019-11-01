@@ -6,11 +6,16 @@
 </head>
 <body>
 <h1>Login Page</h1>
-    <a href="url_for('root')">Homepage page</a>
+    <!--<a href="{{url_for('root')}}">Homepage page</a>-->
     <!--<a href="Register.html">Register page</a>-->
-    <p><label>Email:</label><input type="text" name="Email"></p>
-    <p><label>Password:</label><input type="text" name="Password"></p>
-    <button type="button">Confirm</button>
-    <button type="button">Cancel</button>
+    <a href="{{url_for('register')}}">Create an account</a>
+    <form method="POST" action="{{url_for('root')}}" name="loginForm">
+        <p><label>Email: </label><input type="text" name="email"></p>
+        <p><label>Password: </label><input type="password" name="password"></p>
+
+        <button type="submit" name="login">Login</button>
+        <button type="button" name="cancel">Cancel</button>
+    </form>
+
 </body>
 </html>
