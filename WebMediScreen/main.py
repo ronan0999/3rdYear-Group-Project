@@ -154,6 +154,32 @@ def register():
 
     return render_template("register.html")
 
+@app.route("/checkPatients/<email>")
+def checkPatients(email):
+    print("IN CHECK PATIENT")
+    # GETTING CURRENT PRO
+    proData = db.child('professionals').get()
+
+    currentPro = None
+    for pro in proData.each():
+        if pro.val()['email'] == email:
+            currentPro = pro.val()
+            break
+    # print(currentPro)
+
+    # GETTING LIST OF PATIENT FOR CURRENT PRO
+    patientData = db.child('patients').get()
+    patientList = []
+    for patient in patientData.each():
+        print(patient.val())
+        if patient.val()['gpname'] == currentPro['name']:
+            # patientList.append(patient.val())
+            patientList.append(patient.val()['name'])
+    print(patientList)
+    return render_template('check_patient.html', data=patientList)
+    
+
+
 @app.route("/logout")
 def logout():
     session.pop('username', None)

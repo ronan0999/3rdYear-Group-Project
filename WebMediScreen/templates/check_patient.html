@@ -6,6 +6,18 @@
 </head>
 <body>
     <h1>Check Patients</h1>
-
+    {% if data %}
+        <p>printing data</p>
+        <table border="1">
+            <tr>
+                <th>Patient List</th>
+            </tr>
+            {% for patient in data %}
+                <tr>
+                    <td><a href="">{{patient}}</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
 </body>
 </html>
