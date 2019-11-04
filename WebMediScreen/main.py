@@ -174,10 +174,21 @@ def checkPatients(email):
         print(patient.val())
         if patient.val()['gpname'] == currentPro['name']:
             # patientList.append(patient.val())
-            patientList.append(patient.val()['name'])
+            patientList.append(patient.val())
     print(patientList)
     return render_template('check_patient.html', data=patientList)
     
+
+@app.route("/patientDetails/<patientId>")
+def displayPatient(patientId):
+    patientData = db.child("patients").get()
+    selectedPatientData = None
+    for patient in patientData.each():
+        if patient.val()['pID'] == patientId:
+            selectedPatientData = patient.val()
+            break
+
+    return render_template("patientDetails.html", patientData=selectedPatientData)
 
 
 @app.route("/logout")

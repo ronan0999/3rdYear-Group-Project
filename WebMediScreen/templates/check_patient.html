@@ -13,8 +13,9 @@
                 <th>Patient List</th>
             </tr>
             {% for patient in data %}
+                <p>{{patient['pID']}}</p>
                 <tr>
-                    <td><a href="">{{patient}}</a></td>
+                    <td><a href="{{url_for('displayPatient', patientId=patient['pID'])}}">{{patient['name']}}</a></td>
                 </tr>
             {% endfor %}
         </table>
