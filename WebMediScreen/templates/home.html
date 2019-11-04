@@ -3,21 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Home Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="{{ url_for('static', filename='bootstrap-4.3.1-dist/css/gpstyles.css') }}" rel="stylesheet">
+	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 
 <body>
-    <header>
-        <h2>Welcome to MediWeb</h2>
+        <center><h2>Welcome to MediWeb</h2></center>
         <!--<button type="button">Login</button>-->
         <a href="{{url_for('login')}}">Login</a>
         <!--<button type="button">Register</button>-->
         <a href="{{url_for('register')}}">Register</a>
-    </header>
-    <main>
-        <p>Medical News Section</p>
-        <p>Website News Section</p>
-        <p>Social Media Section</p>
-    </main>
+        <div style="padding: 20px; margin: auto; width: 250px; border:5px solid black; text-align: center; height: 100px;">
+            <div>
+                 <p>Medical News Section</p>
+            </div>
+        </div>
+        <div style="padding: 20px; margin: auto; width: 250px; border:5px solid black; text-align: center; height: 100px;">
+            <div>
+                 <p>Website News Section</p>
+            </div>
+        </div>
+        <div style="padding: 20px; margin: auto; width: 250px; border:5px solid black; text-align: center; height: 100px;">
+            <div>
+                 <p>Social Media Section</p>
+            </div>
+        </div>
     <footer>
         <!--Something...-->
     </footer>

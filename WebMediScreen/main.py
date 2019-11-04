@@ -5,10 +5,10 @@ import bcrypt
 
 app = Flask(__name__)
 
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # connection url
-print("connected to mongo")
-mydb = myclient['medicare'] # connection to db
-print("connected to db")
+# myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # connection url
+# print("connected to mongo")
+# mydb = myclient['medicare'] # connection to db
+# print("connected to db")
 
 
 @app.route("/", methods=["GET", "POST"])
