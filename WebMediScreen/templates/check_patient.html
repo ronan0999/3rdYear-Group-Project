@@ -6,14 +6,13 @@
 </head>
 <body>
     <h1>Check Patients</h1>
+    <a href="{{url_for('logout')}}">Logout</a>
     {% if data %}
-        <p>printing data</p>
         <table border="1">
             <tr>
                 <th>Patient List</th>
             </tr>
             {% for patient in data %}
-                <p>{{patient['pID']}}</p>
                 <tr>
                     <td><a href="{{url_for('displayPatient', patientId=patient['pID'])}}">{{patient['name']}}</a></td>
                 </tr>

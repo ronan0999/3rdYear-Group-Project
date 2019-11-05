@@ -1,5 +1,6 @@
 import flask, pymongo, os, bcrypt, uuid
 from flask import Flask, render_template, request, redirect, url_for, session, g
+from flask_login import LoginManager, login_user, login_required, UserMixin, logout_user, current_user
 import pyrebase
 
 app = Flask(__name__)
@@ -24,8 +25,18 @@ config = {
 firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 
+loginManager = LoginManager()
+loginManager.init_app(app)
 
 gpId = 0
+
+class User(UserMixin):
+    def __init__(self, email):
+        self.email = email
+
+    def get_id(self):
+        return self.email
+    # self.name = name
 
 @app.route("/", methods=["GET", "POST"])
 def root():
@@ -33,6 +44,8 @@ def root():
     if 'username' in session:
         # return session['username']
         return redirect(url_for('home', email=session['username']))
+    # if current_user.is_authenticated:
+    #     return redirect(url_for('home', email=current_user))
     if request.method == 'POST':
         session.pop('username', None)
         # accounts = mydb['accounts']
@@ -52,13 +65,16 @@ def root():
             # if bcrypt.checkpw(request.form['password'], bytes(loginUser['password'])):
             # if bcrypt.hashpw(request.form['password'], bytes(loginUser['password'])) == bytes(loginUser['password']):
             lp = bytes(loginUser['password'][2:-1].encode('utf-8'))
-            print(lp)
+            # print(lp)
             p = request.form['password'].encode('utf-8')
-            print(bcrypt.hashpw(p, lp))
+            # print(bcrypt.hashpw(p, lp))
             if bcrypt.hashpw(p, lp) == lp:
-                session['username'] = request.form['email']
+                print("USER")
+                user = User(loginUser['email'])
+                login_user(user)
+                # session['username'] = request.form['email']
                 print("match2")
-                print(session['username'])
+                # print(session['username'])
                 # return redirect(url_for('root'))
                 return redirect(url_for('home', email=request.form['email']))
     return redirect(url_for('login'))
@@ -80,6 +96,7 @@ def root():
     #     return render_template('home.html')
 
 @app.route("/home/<email>")
+@login_required
 def home(email):
     print("in home")
     return render_template("home.html", email=email)
@@ -88,8 +105,9 @@ def home(email):
 def login():
     print("login")
     # if request.method == "POST":
-    #     accounts = mydb['accounts']
-    #     loginUser = accounts.find_one({'email': request.form['email']})
+    #     # accounts = mydb['accounts']
+    #     # loginUser = accounts.find_one({'email': request.form['email']})
+    #
     #
     #     if loginUser:
     #         print("match1")
@@ -100,6 +118,17 @@ def login():
     #             return "You are logged in as " + request.form['email']
     #     return "invalid email or password"
     return render_template('login.html')
+
+@loginManager.user_loader
+def load_user(email):
+    proAccounts = db.child("professionalAccounts").get()
+    pro = None
+    for pro in proAccounts.each():
+        if pro.val()['email'] == email:
+            pro = pro.val()
+    if pro == None:
+        return None
+    return User(email=pro['email'])
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -118,8 +147,6 @@ def register():
             print("creating")
             # professionals = mydb['professionals']
             hashpass = bcrypt.hashpw(request.form['password'].encode('utf-8'), bcrypt.gensalt())
-            print(hashpass)
-            print(str(hashpass))
             # accounts.insert_one({
             #     'email': request.form['email'],
             #     'password': hashpass
@@ -154,10 +181,22 @@ def register():
 
     return render_template("register.html")
 
-@app.route("/checkPatients/<email>")
+@app.route("/checkPatients/<email>", methods=['GET', 'POST'])
+@login_required
 def checkPatients(email):
     print("IN CHECK PATIENT")
     # GETTING CURRENT PRO
+    # if request.method == 'POST':
+    #     patientId = request.form['pId']
+    #     patientData = db.child('patients').get()
+    #
+    #     newPatient = None
+    #     for patient in patientData.each():
+    #         if patient.val()['pID'] == patientId:
+    #             newPatient = patient.val()
+    #             break
+    #     return redirect(url_for('checkPatients', email=email))
+    # else:
     proData = db.child('professionals').get()
 
     currentPro = None
@@ -176,10 +215,11 @@ def checkPatients(email):
             # patientList.append(patient.val())
             patientList.append(patient.val())
     print(patientList)
-    return render_template('check_patient.html', data=patientList)
-    
+    return render_template('check_patient.html', data=patientList, email=email)
+
 
 @app.route("/patientDetails/<patientId>")
+@login_required
 def displayPatient(patientId):
     patientData = db.child("patients").get()
     selectedPatientData = None
@@ -192,9 +232,11 @@ def displayPatient(patientId):
 
 
 @app.route("/logout")
+@login_required
 def logout():
-    session.pop('username', None)
-    g.user = None
+    # session.pop('username', None)
+    # g.user = None
+    logout_user()
     return redirect(url_for("root"))
 
 @app.before_request
