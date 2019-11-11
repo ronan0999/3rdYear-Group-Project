@@ -27,6 +27,8 @@ db = firebase.database()
 
 loginManager = LoginManager()
 loginManager.init_app(app)
+loginManager.login_view = "login"
+loginManager.login_message = "Please log in to access this page"
 
 gpId = 0
 
@@ -72,7 +74,7 @@ def root():
                 print("USER")
                 user = User(loginUser['email'])
                 login_user(user)
-                # session['username'] = request.form['email']
+                session['username'] = request.form['email']
                 print("match2")
                 # print(session['username'])
                 # return redirect(url_for('root'))
@@ -169,15 +171,16 @@ def register():
 
             proDetail = {
                 'type': request.form['profession'],
-                'gpId' : str(uuid.uuid4())[:8],
+                # 'gpId' : str(uuid.uuid4())[:8],
+                'gpId': request.form['gpId'],
                 'name': request.form['firstName'] + " " + request.form['lastName'],
                 'email': request.form['email'],
                 'phone': request.form['phone']
             }
             db.child("professionals").push(proDetail)
-            session['username'] = request.form['email']
+            # session['username'] = request.form['email']
             return redirect(url_for('root'))
-        return 'That username already exists'
+        return 'That user already exists'
 
     return render_template("register.html")
 
@@ -211,7 +214,7 @@ def checkPatients(email):
     patientList = []
     for patient in patientData.each():
         print(patient.val())
-        if patient.val()['gpname'] == currentPro['name']:
+        if patient.val()['gpId'] == currentPro['gpId']:
             # patientList.append(patient.val())
             patientList.append(patient.val())
     print(patientList)
@@ -234,8 +237,8 @@ def displayPatient(patientId):
 @app.route("/logout")
 @login_required
 def logout():
-    # session.pop('username', None)
-    # g.user = None
+    session.pop('username', None)
+    g.user = None
     logout_user()
     return redirect(url_for("root"))
 

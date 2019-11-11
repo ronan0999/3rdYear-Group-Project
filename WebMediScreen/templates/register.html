@@ -9,12 +9,13 @@
     <a href="{{url_for('root')}}">Homepage</a>
     <!--<a href="url_for('register')">Login page</a>-->
     <form method="POST" action="{{url_for('register')}}" name="registration" id="registration">
-        <label><input type="radio" name="profession" value="GP">GP</label>
+        <label><input type="radio" name="profession" value="GP" checked="checked">GP</label>
         <label><input type="radio" name="profession" value="Insurance">Insurance</label>
         <p><label>First Name:</label><input type="text" name="firstName"></p>
         <p><label>Last Name:</label><input type="text" name="lastName"></p>
-        <p><label>Email:</label><input type="text" name="email"></p>
-        <p><label>Phone:</label><input type="text" name="phone"></p>
+        <p><label>ID:</label><input input="text" name="gpId"></p>
+        <p><label>Email:</label><input type="email" name="email"></p>
+        <p><label>Phone:</label><input type="phone" name="phone"></p>
         <p><label>Password:</label><input type="password" name="password"></p>
         <button type="submit" name="submit" form="registration">Register</button>
         <button type="button" name="cancel">Cancel</button>

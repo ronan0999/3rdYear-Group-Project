@@ -36,6 +36,15 @@
                 <th>Email</th>
                 <td>{{patientData['email']}}</td>
             </tr>
+            <tr>
+                <th colspan="2">Medical History</th>
+            </tr>
+            {% for question, answer in patientData['medicalhistory'].items() %}
+                <tr>
+                    <th>{{question}}</th>
+                    <td>{{answer}}</td>
+                </tr>
+            {% endfor %}
         </table>
     {% endif %}
 </body>
