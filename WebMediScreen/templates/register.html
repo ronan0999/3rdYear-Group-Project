@@ -6,23 +6,38 @@
 </head>
 <body>
     <h1>Mediscreen Registration</h1>
-    <a href="{{url_for('root')}}">Homepage</a>
+    <a href="{{url_for('root')}}">Register</a>
+    {% if type %}
     <!--<a href="url_for('register')">Login page</a>-->
-    <form method="POST" action="{{url_for('register')}}" name="registration" id="registration">
-        <label><input type="radio" name="profession" value="GP" checked="checked">GP</label>
-        <label><input type="radio" name="profession" value="Insurance">Insurance</label>
-        <p><label>First Name:</label><input type="text" name="firstName"></p>
-        <p><label>Last Name:</label><input type="text" name="lastName"></p>
-        <p><label>ID:</label><input input="text" name="gpId"></p>
-        <p><label>Email:</label><input type="email" name="email"></p>
-        <p><label>Phone:</label><input type="phone" name="phone"></p>
-        <p><label>Password:</label><input type="password" name="password"></p>
-        <button type="submit" name="submit" form="registration">Register</button>
-        <button type="button" name="cancel">Cancel</button>
-    </form>
-    <p>
-        <!--<input type="submit" value="registration">-->
-        <!--<input type="reset" value="cancel">-->
-    </p>
+        {% if type == 'GP' %}
+            <form method="POST" action="{{url_for('register')}}" name="gpRegistrationForm" id="gpRegistrationForm">
+                <p><label>First Name:</label><input type="text" name="firstName"></p>
+                <p><label>Last Name:</label><input type="text" name="lastName"></p>
+                <p><label>ID:</label><input input="text" name="gpId"></p>
+                <p><label>Email:</label><input type="email" name="email"></p>
+                <p><label>Phone:</label><input type="phone" name="phone"></p>
+                <p><label>Password:</label><input type="password" name="password"></p>
+                <button type="submit" name="submit" form="gpRegistrationForm">Register</button>
+                <button type="button" name="cancel">Cancel</button>
+            </form>
+        {% else %}
+            <form method="POST" action="{{url_for('register')}}" name="insRegistrationForm" id="insRegistrationForm">
+            <p><label>First Name:</label><input type="text" name="firstName"></p>
+            <p><label>Last Name:</label><input type="text" name="lastName"></p>
+            <p><label>Insurance Company Name:</label><input input="text" name="insuranceName"></p>
+            <p><label>Email:</label><input type="email" name="email"></p>
+            <p><label>Phone:</label><input type="phone" name="phone"></p>
+            <p><label>Password:</label><input type="password" name="password"></p>
+            <button type="submit" name="submit" form="insRegistrationForm">Register</button>
+            <button type="button" name="cancel">Cancel</button>
+        </form>
+        {% endif %}
+    {% else %}
+        <form method="POST" action="{{url_for('register')}}" name="typeForm" id="typeForm">
+            <label><input type="radio" name="profession" value="GP" checked="checked">GP</label>
+            <label><input type="radio" name="profession" value="Insurance">Insurance</label>
+            <button type="submit" name="sendType" form="typeForm">Continue</button>
+        </form>
+    {% endif %}
 </body>
 </html>

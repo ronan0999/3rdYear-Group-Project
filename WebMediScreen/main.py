@@ -134,55 +134,75 @@ def load_user(email):
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    type = None
     print("register")
     if request.method == 'POST':
         # accounts = mydb['accounts']
-        accounts = db.child("professionalAccounts").get()
-        # existingUser = accounts.find_one({'email': request.form['email']})
-        existingUser = None
-        for i in accounts.each():
-            if i.val()['email'] == request.form['email']:
-                existingUser = request.form['email']
-                break
-        print(existingUser)
-        if existingUser is None:
-            print("creating")
-            # professionals = mydb['professionals']
-            hashpass = bcrypt.hashpw(request.form['password'].encode('utf-8'), bcrypt.gensalt())
-            # accounts.insert_one({
-            #     'email': request.form['email'],
-            #     'password': hashpass
-            # })
-            accountDetails = {
-                'email': request.form['email'],
-                'password': str(hashpass)
-            }
+        print(request.form)
+        if 'sendType' in request.form:
+            type = request.form['profession']
+            print(type)
+            return render_template('register.html', type=type)
+        else:
+            accounts = db.child("professionalAccounts").get()
+            # existingUser = accounts.find_one({'email': request.form['email']})
+            existingUser = None
+            for i in accounts.each():
+                if i.val()['email'] == request.form['email']:
+                    existingUser = request.form['email']
+                    break
+            print(existingUser)
+            if existingUser is None:
+                print("creating")
+                # professionals = mydb['professionals']
+                hashpass = bcrypt.hashpw(request.form['password'].encode('utf-8'), bcrypt.gensalt())
+                # accounts.insert_one({
+                #     'email': request.form['email'],
+                #     'password': hashpass
+                # })
+                accountDetails = {
+                    'email': request.form['email'],
+                    'password': str(hashpass)
+                }
 
-            db.child("professionalAccounts").push(accountDetails)
+                db.child("professionalAccounts").push(accountDetails)
 
-            # USE FUNCTIONS TO ADD EITHER GP OR INSURANCE   <====
-            # professionals.insert_one({
-            #     'type': request.form['profession'],
-            #     'gp' : str(uuid.uuid4())[:8],
-            #     'name': request.form['firstName'] + " " + request.form['lastName'],
-            #     'email': request.form['email'],
-            #     'phone': request.form['phone']
-            # })
+                # USE FUNCTIONS TO ADD EITHER GP OR INSURANCE   <====
+                # professionals.insert_one({
+                #     'type': request.form['profession'],
+                #     'gp' : str(uuid.uuid4())[:8],
+                #     'name': request.form['firstName'] + " " + request.form['lastName'],
+                #     'email': request.form['email'],
+                #     'phone': request.form['phone']
+                # })
+                if type == 'GP':
+                    proDetail = {
+                        'type': request.form['profession'],
+                        # 'gpId' : str(uuid.uuid4())[:8],
+                        'gpId': request.form['gpId'],
+                        'name': request.form['firstName'] + " " + request.form['lastName'],
+                        'email': request.form['email'],
+                        'phone': request.form['phone']
+                    }
+                else:
+                    proDetail = {
+                        'type': request.form['profession'],
+                        # 'gpId' : str(uuid.uuid4())[:8],
+                        'insuranceName': request.form['insuranceName'],
+                        'name': request.form['firstName'] + " " + request.form['lastName'],
+                        'email': request.form['email'],
+                        'phone': request.form['phone']
+                    }
+                db.child("professionals").push(proDetail)
+                # session['username'] = request.form['email']
+                return redirect(url_for('root'))
+            return 'That user already exists'
+    else:
+        if type == None:
+            return render_template("register.html")
+        else:
+            return render_template("register.html", type=type)
 
-            proDetail = {
-                'type': request.form['profession'],
-                # 'gpId' : str(uuid.uuid4())[:8],
-                'gpId': request.form['gpId'],
-                'name': request.form['firstName'] + " " + request.form['lastName'],
-                'email': request.form['email'],
-                'phone': request.form['phone']
-            }
-            db.child("professionals").push(proDetail)
-            # session['username'] = request.form['email']
-            return redirect(url_for('root'))
-        return 'That user already exists'
-
-    return render_template("register.html")
 
 @app.route("/checkPatients/<email>", methods=['GET', 'POST'])
 @login_required
