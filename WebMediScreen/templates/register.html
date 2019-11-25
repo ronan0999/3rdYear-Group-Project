@@ -6,32 +6,37 @@
 </head>
 <body>
     <h1>Mediscreen Registration</h1>
-    <a href="{{url_for('root')}}">Register</a>
+    <a href="{{url_for('root')}}">Home</a>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <p></p>
+            <h4>{{messages[0]}}</h4>
+        {% endif %}
+    {% endwith %}
     {% if type %}
     <!--<a href="url_for('register')">Login page</a>-->
-        {% if type == 'GP' %}
-            <form method="POST" action="{{url_for('register')}}" name="gpRegistrationForm" id="gpRegistrationForm">
-                <p><label>First Name:</label><input type="text" name="firstName"></p>
-                <p><label>Last Name:</label><input type="text" name="lastName"></p>
-                <p><label>ID:</label><input input="text" name="gpId"></p>
-                <p><label>Email:</label><input type="email" name="email"></p>
-                <p><label>Phone:</label><input type="phone" name="phone"></p>
-                <p><label>Password:</label><input type="password" name="password"></p>
-                <button type="submit" name="submit" form="gpRegistrationForm">Register</button>
-                <button type="button" name="cancel">Cancel</button>
-            </form>
-        {% else %}
-            <form method="POST" action="{{url_for('register')}}" name="insRegistrationForm" id="insRegistrationForm">
-            <p><label>First Name:</label><input type="text" name="firstName"></p>
-            <p><label>Last Name:</label><input type="text" name="lastName"></p>
-            <p><label>Insurance Company Name:</label><input input="text" name="insuranceName"></p>
-            <p><label>Email:</label><input type="email" name="email"></p>
-            <p><label>Phone:</label><input type="phone" name="phone"></p>
-            <p><label>Password:</label><input type="password" name="password"></p>
-            <button type="submit" name="submit" form="insRegistrationForm">Register</button>
+        <form method="POST" action="{{url_for('register')}}" name="gpRegistrationForm" id="gpRegistrationForm">
+            <p><label>First Name:</label><input type="text" name="firstName" required></p>
+            <p><label>Last Name:</label><input type="text" name="lastName" required></p>
+            {% if type == 'GP' %}
+                <p><label>ID:</label><input input="text" name="gpId" required></p>
+            {% else %}
+                <p>
+                    <label>Insurance Company Name:</label>
+                    <select name="insuranceName" required>
+                        <option value="" disabled selected>Select an insurance company</option>
+                        <option value="Vhi">Vhi</option>
+                        <option value="Irish Life Health">Irish Life Health</option>
+                        <option value="Laya Healthcare">Laya Healthcare</option>
+                    </select>
+                </p>
+            {% endif %}
+            <p><label>Email:</label><input type="email" name="email" required></p>
+            <p><label>Phone:</label><input type="phone" name="phone" required></p>
+            <p><label>Password:</label><input type="password" name="password" required></p>
+            <button type="submit" name="submit" form="gpRegistrationForm">Register</button>
             <button type="button" name="cancel">Cancel</button>
         </form>
-        {% endif %}
     {% else %}
         <form method="POST" action="{{url_for('register')}}" name="typeForm" id="typeForm">
             <label><input type="radio" name="profession" value="GP" checked="checked">GP</label>

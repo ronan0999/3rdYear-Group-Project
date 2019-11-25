@@ -1,15 +1,12 @@
+# Author: Ronan Roche
+
 import flask, pymongo, os, bcrypt, uuid
-from flask import Flask, render_template, request, redirect, url_for, session, g
+from flask import Flask, render_template, request, redirect, url_for, session, g, flash
 from flask_login import LoginManager, login_user, login_required, UserMixin, logout_user, current_user
 import pyrebase
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-
-# myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # connection url
-# print("connected to mongo")
-# mydb = myclient['medicare'] # connection to db
-# print("connected to db")
 
 def noquote(s):
     return s
@@ -22,6 +19,7 @@ config = {
     "storageBucket": "mediscreen-c7469.appspot.com",
     "serviceAccount": "serviceAccountCredentials.json"
 }
+
 firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 
@@ -43,16 +41,14 @@ class User(UserMixin):
 @app.route("/", methods=["GET", "POST"])
 def root():
     print("In root")
+    # error = []
     if 'username' in session:
         # return session['username']
         return redirect(url_for('home', email=session['username']))
-    # if current_user.is_authenticated:
-    #     return redirect(url_for('home', email=current_user))
+
     if request.method == 'POST':
         session.pop('username', None)
-        # accounts = mydb['accounts']
         accounts = db.child("professionalAccounts").get()
-        # loginUser = accounts.find_one({'email': request.form['email']})
 
         loginUser = None
         for i in accounts.each():
@@ -67,35 +63,21 @@ def root():
             # if bcrypt.checkpw(request.form['password'], bytes(loginUser['password'])):
             # if bcrypt.hashpw(request.form['password'], bytes(loginUser['password'])) == bytes(loginUser['password']):
             lp = bytes(loginUser['password'][2:-1].encode('utf-8'))
-            # print(lp)
             p = request.form['password'].encode('utf-8')
-            # print(bcrypt.hashpw(p, lp))
             if bcrypt.hashpw(p, lp) == lp:
-                print("USER")
                 user = User(loginUser['email'])
                 login_user(user)
                 session['username'] = request.form['email']
                 print("match2")
-                # print(session['username'])
-                # return redirect(url_for('root'))
-                return redirect(url_for('home', email=request.form['email']))
-    return redirect(url_for('login'))
 
-    # if 'username' in session:
-    #     return 'You are logged in as ' + session['username']
-    # return render_template('home.html')
-    # if request.method == 'POST':
-    #     email = request.form.get('email')
-    #     password = request.form.get('password')
-    #
-    #     if checkAccount(email, password):
-    #         print("EXISTS")
-    #         return redirect(url_for('root'))
-    #     else:
-    #         print("NOT EXISTS")
-    #         return redirect(url_for('login'))
-    # else:
-    #     return render_template('home.html')
+                return redirect(url_for('home', email=request.form['email']))
+            else:
+                # error.append("An error has occured. Your email or password is incorrect")
+                flash("An error has occured. Your email or password is incorrect")
+        else:
+            # error.append("An error has occured. Your email or password is incorrect")
+            flash("An error has occured. Your email or password is incorrect")
+    return redirect(url_for('login'))
 
 @app.route("/home/<email>")
 @login_required
@@ -106,19 +88,6 @@ def home(email):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     print("login")
-    # if request.method == "POST":
-    #     # accounts = mydb['accounts']
-    #     # loginUser = accounts.find_one({'email': request.form['email']})
-    #
-    #
-    #     if loginUser:
-    #         print("match1")
-    #         if bcrypt.hashpw(request.form['password'].encode('utf-8'), loginUser['password']) == loginUser['password']:
-    #             session['username'] = request.form['email']
-    #             print("match2")
-    #             # return redirect(url_for('root'))
-    #             return "You are logged in as " + request.form['email']
-    #     return "invalid email or password"
     return render_template('login.html')
 
 @loginManager.user_loader
@@ -137,29 +106,21 @@ def register():
     type = None
     print("register")
     if request.method == 'POST':
-        # accounts = mydb['accounts']
-        print(request.form)
         if 'sendType' in request.form:
             type = request.form['profession']
-            print(type)
             return render_template('register.html', type=type)
         else:
-            accounts = db.child("professionalAccounts").get()
-            # existingUser = accounts.find_one({'email': request.form['email']})
-            existingUser = None
-            for i in accounts.each():
-                if i.val()['email'] == request.form['email']:
-                    existingUser = request.form['email']
-                    break
-            print(existingUser)
-            if existingUser is None:
+            # accounts = db.child("professionalAccounts").get()
+            # existingUser = None
+            # for i in accounts.each():
+            #     if i.val()['email'] == request.form['email']:
+            #         existingUser = request.form['email']
+            #         break
+            # ok = checkInputs(request.form)
+            if checkUserExists(request.form) and checkInputs(request.form):
+                # print("----------------------------------->> ", ok)
                 print("creating")
-                # professionals = mydb['professionals']
                 hashpass = bcrypt.hashpw(request.form['password'].encode('utf-8'), bcrypt.gensalt())
-                # accounts.insert_one({
-                #     'email': request.form['email'],
-                #     'password': hashpass
-                # })
                 accountDetails = {
                     'email': request.form['email'],
                     'password': str(hashpass)
@@ -167,17 +128,9 @@ def register():
 
                 db.child("professionalAccounts").push(accountDetails)
 
-                # USE FUNCTIONS TO ADD EITHER GP OR INSURANCE   <====
-                # professionals.insert_one({
-                #     'type': request.form['profession'],
-                #     'gp' : str(uuid.uuid4())[:8],
-                #     'name': request.form['firstName'] + " " + request.form['lastName'],
-                #     'email': request.form['email'],
-                #     'phone': request.form['phone']
-                # })
                 if type == 'GP':
                     proDetail = {
-                        'type': request.form['profession'],
+                        'type': "GP",
                         # 'gpId' : str(uuid.uuid4())[:8],
                         'gpId': request.form['gpId'],
                         'name': request.form['firstName'] + " " + request.form['lastName'],
@@ -186,7 +139,7 @@ def register():
                     }
                 else:
                     proDetail = {
-                        'type': request.form['profession'],
+                        'type': "Insurance",
                         # 'gpId' : str(uuid.uuid4())[:8],
                         'insuranceName': request.form['insuranceName'],
                         'name': request.form['firstName'] + " " + request.form['lastName'],
@@ -196,13 +149,43 @@ def register():
                 db.child("professionals").push(proDetail)
                 # session['username'] = request.form['email']
                 return redirect(url_for('root'))
-            return 'That user already exists'
+            # return 'That user already exists'
+            # flash("This user already exists")
+            return redirect(url_for("register"))
     else:
         if type == None:
             return render_template("register.html")
         else:
             return render_template("register.html", type=type)
 
+
+def checkInputs(form):
+    ok = True
+
+    if not form["firstName"].isalpha():
+        ok = False
+        flash("Please enter letters for your first name")
+    elif not form["lastName"].isalpha():
+        ok = False
+        flash("Please enter letters for your last name")
+    elif not form["phone"].isnumeric():
+        ok = False
+        flash("Please enter numbers for your phone number")
+
+    return ok
+
+def checkUserExists(form):
+    ok = True
+
+    accounts = db.child("professionalAccounts").get()
+    for i in accounts.each():
+        if i.val()['email'] == form['email']:
+            # existingUser = request.form['email']
+            flash("This user already exists")
+            ok = False
+            break
+
+    return ok
 
 @app.route("/checkPatients/<email>", methods=['GET', 'POST'])
 @login_required
@@ -227,7 +210,6 @@ def checkPatients(email):
         if pro.val()['email'] == email:
             currentPro = pro.val()
             break
-    # print(currentPro)
 
     # GETTING LIST OF PATIENT FOR CURRENT PRO
     patientData = db.child('patients').get()
