@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <title>Patient Details</title>
+</head>
+<body>
+    <div class="container">
+        <div class="text-center">
+            <h1>Patient Details</h1>
+        </div>
+        <a href="#" id="logoutButton">Logout</a><br>
+        <!-- {% if patientData %} -->
+        <table border="1">
+          <thead>
+            <tr>
+                <th colspan="2">Details</th>
+            </tr>
+          </thead>
+          <tbody id="patientInfo">
+
+          </tbody>
+            <!-- <tr>
+                <th>Name</th>
+                <td>{{patientData['name']}}</td>
+            </tr>
+            <tr>
+                <th>Age</th>
+                <td>{{patientData['age']}}</td>
+            </tr>
+            <tr>
+                <th>Date of Birth</th>
+                <td>{{patientData['dob']}}</td>
+            </tr>
+            <tr>
+                <th>Insurance Name</th>
+                <td>{{patientData['insurancename']}}</td>
+            </tr>
+            <tr>
+                <th>Phone number</th>
+                <td>{{patientData['phone']}}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{patientData['email']}}</td>
+            </tr>
+            <tr>
+                <th colspan="2">Medical History</th>
+            </tr>
+            <!-- {% for question, answer in patientData['medicalhistory'].items() %} -->
+                <!-- <tr>
+                    <th>{{question}}</th>
+                    <td>{{answer}}</td>
+                </tr> -->
+            <!-- {% endfor %} -->
+        </table>
+        <!-- {% endif %} -->
+        <!-- <form method="POST" action="{{url_for('diabetesRisk', patientId=patientData['pID'])}}" id="aiForm">
+            <button type="Submit" value="diabetesRisk" form="aiForm">Check Diabetes Risk</button>
+        </form> -->
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-auth.js"></script>
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyBCh-kDeYZm1BhGuS1PbGXAj7985Ldt2Nw",
+        authDomain: "mediscreen-c7469.firebaseapp.com",
+        databaseURL: "https://mediscreen-c7469.firebaseio.com",
+        projectId: "mediscreen-c7469",
+        storageBucket: "mediscreen-c7469.appspot.com",
+        messagingSenderId: "704035571031",
+        appId: "1:704035571031:web:c855cc8ea82dbf11f86a12"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+    </script>
+    <script src="https://code.jquery.com/jquery-3.1.0.js"></script>
+    <script src="index.js"></script>
+    <script>
+      firebase.auth().onAuthStateChanged(function(user){
+        if(!user) {
+          window.location.href = "index.html";
+        }
+        else {
+          var queryString = decodeURIComponent(window.location.search);
+          queryString = queryString.substring(1);
+          var queries = queryString.split("&");
+          console.log(queries[0].substring(6));
+          var id = queries[0].substring(6)
+          var patient = null;
+          var rootRef = firebase.database().ref().child("patients");
+          rootRef.on('value', function(snapshot){
+            console.log(Object.values(snapshot.val()));
+            Object.values(snapshot.val()).forEach(value=>{
+              if (value.pID == id) {
+                patient = value;
+                // console.log(patient);
+                appendDetails(patient);
+                // break;
+              }
+            })
+          })
+          function appendDetails(patient){
+            console.log("Finally");
+            $("#patientInfo").append(
+            "<tr><th>Name</th><td>" + patient.name + "</td></tr><tr><th>Age</th><td>" + patient.age +
+            "</td></tr><tr><th>Date of Birth</th><td>" + patient.dob + "</td></tr><tr><th>Insurance Name</th><td>" +
+              patient.insurancename + "</td></tr><tr><th>Phone number</th><td>" + patient.phone + "</td></tr><tr><th>Email</th><td>" +
+                patient.email + "</td></tr>");
+          }
+        }
+      });
+    </script>
+</body>
+</html>
