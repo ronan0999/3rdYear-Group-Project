@@ -14,14 +14,6 @@
               <h1>Mediscreen Registration</h1>
           </div>
       <a href="#">Home</a>
-      <!-- {% with messages = get_flashed_messages() %}
-          {% if messages %}
-              <p></p>
-              <h4>{{messages[0]}}</h4>
-          {% endif %}
-      {% endwith %}
-      {% if type %} -->
-      <!--<a href="url_for('register')">Login page</a>-->
         <form action="#" name="registrationForm" id="registrationForm">
             <div class="form-group">
                 <label><input type="radio" name="profession" value="Insurance" id="insuranceRadio" class="profession" checked="checked">Insurance</label>
@@ -30,14 +22,14 @@
                 <label><input type="radio" name="profession" value="GP" id="gpRadio" class="profession">GP</label>
             </div>
             <div class="form-group">
-                <p><label>First Name:</label><input type="text" id="firstName" required></p>
+                <p><label>First Name:</label><input class="form-control" type="text" id="firstName" required></p>
             </div>
             <div class="form-group">
-                <p><label>Last Name:</label><input type="text" id="lastName" required></p>
+                <p><label>Last Name:</label><input class="form-control" type="text" id="lastName" required></p>
             </div>
             <!-- {% if type == 'GP' %} -->
             <div class="form-group">
-                <p><label>ID:</label><input input="text" id="id" required></p>
+                <p><label>ID:</label><input class="form-control" input="text" id="id" required></p>
             </div>
             <!-- {% else %} -->
             <div class="form-group" id="insuranceDetail">
@@ -51,45 +43,23 @@
                     </select>
                 </p>
             </div>
-            <!-- {% endif %} -->
             <div class="form-group">
-                <p><label>Phone:</label><input type="phone" id="phone" required></p>
+                <p><label>Phone:</label><input class="form-control" type="phone" id="phone" required></p>
             </div>
             <div class="form-group">
-                <p><label>Email:</label><input type="email" id="email" required></p>
+                <p><label>Email:</label><input class="form-control" type="email" id="email" required></p>
             </div>
             <div class="form-group">
-                <p><label>Password:</label><input type="password" id="password" required></p>
+                <p><label>Password:</label><input class="form-control" type="password" id="password" required></p>
             </div>
             <button class="btn btn-primary" type="button" name="submit" id="registerButton">Register</button>
             <button class="btn btn-primary" type="button" name="cancel">Cancel</button>
         </form>
-    <!-- {% else %} -->
-        <!-- <form method="POST" action="#" name="typeForm" id="typeForm">
-            <div class="form-group">
-                <label><input type="radio" name="profession" value="GP" checked="checked">GP</label>
-            </div>
-            <div class="form-group">
-                <label><input type="radio" name="profession" value="Insurance">Insurance</label>
-            </div>
-            <button class="btn btn-primary" type="submit" name="sendType" form="typeForm">Continue</button>
-        </form> -->
-    <!-- {% endif %} -->
       </div>
       <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-app.js"></script>
       <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-database.js"></script>
       <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-auth.js"></script>
       <script>
-        // Your web app's Firebase configuration
-        // var firebaseConfig = {
-        //   apiKey: "AIzaSyA1pdIFtF9UlyWcnqGyP_euJjxLEDQeOrQ",
-        //   authDomain: "test-6e817.firebaseapp.com",
-        //   databaseURL: "https://test-6e817.firebaseio.com",
-        //   projectId: "test-6e817",
-        //   storageBucket: "test-6e817.appspot.com",
-        //   messagingSenderId: "954809652280",
-        //   appId: "1:954809652280:web:59ee0da9aa7369516302cd"
-        // };
         var firebaseConfig = {
           apiKey: "AIzaSyBCh-kDeYZm1BhGuS1PbGXAj7985Ldt2Nw",
           authDomain: "mediscreen-c7469.firebaseapp.com",

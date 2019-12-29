@@ -1,48 +1,13 @@
 
-
-
-// var mainText = document.getElementById("mainText");
-// var submitBtn =  document.getElementById("submitBtn");
-// var heading = document.getElementById("fireHeading");
-//
-// // RETRIEVE DATA
-// var firebaseHeadingRef = firebase.database().ref().child("Heading");
-// firebaseHeadingRef.on('value', function(datasnapshot){
-//   fireHeading.innerText = datasnapshot.val();
-// })
-// // PUSH DATA
-// function submitClick() {
-//   var firebaseRef = firebase.database().ref();
-//
-//   var messageText = mainText.value;
-//   // firebaseRef.child("Text").set(messageText); //FOR ADDING, if child name exists --> replace value
-//   firebaseRef.push().set(messageText);  // WILL CREATE A UNIQUE ID INSTEAD OF REPLACE IF EXITS
-//   console.log("DONE");
-// }
-
-
-// $(document).ready(function() {  // will run when the page is ready
-//   var rootRef = firebase.database().ref().child("Users");
-//
-//   rootRef.on("child_added", snap => {
-//     var name = snap.child("Name").val();
-//     var email = snap.child("Email").val();
-//
-//     // $("#tableBody").append("<tr><td>" + name + "</td><td>" + email + "</td><td><button>Remove</button></td></tr>");
-//     $("#tableBody").append("<tr><td>" + name + "</td><td>" + email + "</td><td><button>Remove</button></td></tr>");
-//   })
-// });
-
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
 
-$("#loginButton").click(function(){
+$("#loginButton").click(function(){ // Setting onclick listener for loggin in button
   // alert("user");
   console.log("LOGIN")
-  var email = $("#email").val();
-  var password = $("#password").val();
-  // console.log(email);
-  // console.log(password);
-  if (email != "" && password != "") {
+  var email = $("#email").val();  // Getting the value in the email field
+  var password = $("#password").val(); // Getting the value in the pasword field
+
+  if (email != "" && password != "") {  // Checking that all the fields were filled
     var result = firebase.auth().signInWithEmailAndPassword(email, password);
 
     result.catch(function(error){
@@ -58,18 +23,12 @@ $("#loginButton").click(function(){
   }
 })
 
-$("#logoutButton").click(function(){
-  firebase.auth().signOut();
-  // firebase.auth().signOut().then(function() {
-  // // Sign-out successful.
-  //
-  // })
-  // console.log(user);
-  // alert("log");
+$("#logoutButton").click(function(){  // Setting onclick listener to the logout button
+  firebase.auth().signOut();  // Using Fireabse Authentication to sign out the user
 })
 
-$("#registerLink").click(function(){
-  window.location.href = "register.html";
+$("#registerLink").click(function(){  // Setting onclick listener to the link to register
+  window.location.href = "register.html"; // Displaying the registration form
 })
 
 $("#registerButton").click(function(){
@@ -80,10 +39,9 @@ $("#registerButton").click(function(){
   var phone = $("#phone").val();
   var email = $("#email").val();
   var password = $("#password").val();
-  console.log(email);
-  // if (email != "" && password != "") {
-  var result = firebase.auth().createUserWithEmailAndPassword(email, password);
 
+  var result = firebase.auth().createUserWithEmailAndPassword(email, password); // Trying to create a new user and storing the result
+  var error = false;
   result.catch(function(error){
     var errorCode = error.code;
     var errorMessage = error.message;
@@ -91,154 +49,89 @@ $("#registerButton").click(function(){
     console.log(errorCode + ": " + errorMessage);
     alert("Message: " + errorMessage);
   })
-  var firebaseRef = firebase.database().ref().child("professionals");
-  toPush = {
-    'type':type,
-    'name':fname + " " + lname,
-    'id':id,
-    'phone':phone,
-    'email':email,
-  };
-  if (type == 'Insurance'){
-    var insuranceName = $('#insuranceName').val();
-    // console.log(insuranceName);
-    toPush['insuranceName'] = insuranceName;
+  if (!error){
+    var firebaseRef = firebase.database().ref().child("professionals"); // Getting a reference to the professionals collection in the database
+    // Creating a dictionary with the information from the form
+    // This dictionary will be pushed to the database
+    toPush = {
+      'type':type,
+      'name':fname + " " + lname,
+      'id':id,
+      'phone':phone,
+      'email':email,
+    };
+
+    if (type == 'Insurance'){ // Checking the type of the professional to create
+      var insuranceName = $('#insuranceName').val();
+      // console.log(insuranceName);
+      toPush['insuranceName'] = insuranceName;
+    }
+    // console.log(toPush['insuranceName']);
+
+    firebaseRef.push().set(toPush); // Pushing the data to the database
+
   }
-  console.log(toPush['insuranceName']);
-  firebaseRef.push().set(toPush);
-  console.log('done');
-  // }
-  // else {
-  //   alert("Please fill out all fields");
-  // }
-// })
+
 })
 
-$(".profession").change(function(){
-  // if ($("#gpRadio").checked()) {
-  // console.log($("input[name='profession']:checked").val());
-  if ($("input[name='profession']:checked").val() == 'GP') {
-    console.log("IN");
-    $("#insuranceDetail").hide();
+$(".profession").change(function(){ // Setting onchange listener for the radio buttons
+  if ($("input[name='profession']:checked").val() == 'GP') {  // if it is a GP
+    $("#insuranceDetail").hide(); // we don't get the insurance name
   }
   else {
-    $("#insuranceDetail").show();
+    $("#insuranceDetail").show(); // get the insurance name
   }
 })
 
-$("#checkLink").click(function(){
-  // alert(window.location);
-  var user = firebase.auth().currentUser.email;
-  console.log(user)
-  window.location.href = "checkPatients.html";
-  // // var rootRef = firebase.database().ref().child("Professionals")//.orderByChild("email").equalTo(user);
-  var rootRef = firebase.database().ref().child("professionals");
+$("#checkLink").click(function(){ // Setting onclick listener to the checkPatients link
+  var user = firebase.auth().currentUser.email; // Getting the current user's email
+  window.location.href = "checkPatients.html";  // Displaying the checkPatients page
+
+  var rootRef = firebase.database().ref().child("professionals"); // Getting a reference to the professionals collection
+
   var current = null;
   rootRef.on("value", function(snapshot){
 
-    console.log(typeof snapshot.val());
-    // for (var i in snapshot.val()){
-    //   // console.log(snapshot.i);
-    //   if(snapshot.val().hasOwnProperty(i)){
-    //    console.log(${i} : ${snapshot.val()[i]});
-    //   }
-    //   // console.log(value);
-    //   if (snapshot.val().email == user){
-    //     current = snapshot.val();
-    //     getPatient(current);
-    //     // console.log(current);
-    //
-    //   }
-    // }
-
-    Object.values(snapshot.val()).forEach(value=>{
-      // console.log(value);
-      if (value.email == user) {
+    Object.values(snapshot.val()).forEach(value=>{  // Looping through the collection
+      if (value.email == user) {  // Checking if the rmail corresponds to the current user's email
         current = value;
         getPatient(current);
       }
     });
   })
-  alert("wait");
-  // console.log(current);
-  // firebase.database().ref("/test-6e817/Professionals/LwEkbZ_xicodOfUwnfS").once("value").then(function(snapshot) {
-  // var username = snapshot.val();
-  // console.log(snapshot.val());
-  // ...
 })
 
 function getAllPatients() {
-  var user = firebase.auth().currentUser.email;
-  console.log(user);
-  // var rootRef = firebase.database().ref().child("Professionals")//.orderByChild("email").equalTo(user);
+  var user = firebase.auth().currentUser.email; // getting the current user's email
+
   var rootRef = firebase.database().ref().child("professionals");
   var current = null;
-  rootRef.on("value", function(snapshot){
-    console.log(snapshot.val());
+  rootRef.on("value", function(snapshot){ // looping through collection of professionals
     Object.values(snapshot.val()).forEach(value=>{
-      if (value.email == user) {
-        current = value;
+      if (value.email == user) {  // if the email corresponds to the current user's one
+        current = value;  // get the user's details from the database
         getPatient(current);
       }
     })
   })
 }
-//   rootRef.on("value", function(snapshot){
-//     Object.values(snapshot.val().forEach(value=>{
-//       // console.log(value);
-//       if (value.email == user) {
-//         current = value;
-//         getPatient(current);
-//       }
-//   }))
-//   }
-// }
 
 
 function getPatient(user) {
   var rootRef = firebase.database().ref().child("patients");
-  // var patients = [];
-  console.log("In");
+
   rootRef.on("value", function(snapshot){
-    console.log("Hi");
-    Object.values(snapshot.val()).forEach(value=>{
-      // console.log(value);
-      if (value.gpId == user.id) {
-        // patients.push(value);
-        $("#tableBody").append("<tr><td><a href='#' class='patientLink' id=" + value.pID + ">" + value.name + "</a></td></tr>");
+
+    Object.values(snapshot.val()).forEach(value=>{ // looping through all the patients
+      if (value.gpId == user.id) {  // checking if the current user's id is the same to the one for the patient
+        $("#tableBody").append("<tr><td><a href='#' class='patientLink' id=" + value.pID + ">" + value.name + "</a></td></tr>");  // add the patient to the table
         $("#" + value.pID).click(function(){
-          var queryString = "?para1=" + this.id;
-          // console.log(this.id);
+          var queryString = "?para1=" + this.id;  // passing the id to the url
+
           window.location.href = "patientDetails.html" + queryString;
         })
       }
     })
-    // console.log(snapshot.val().id);
-    // if (snapshot.val().gpId == user.id){
-    //   patients.push(snapshot.val());
-    // }
-    // console.log(patients);
   })
 
 }
-//
-// document.getElementByClassName("patientLink").addEventListener('click', function(){
-//   console.log(this.id);
-// });
-
-// $(".patientLink").click(function() {
-//   console.log("er")
-//   window.location.href = "patientDetails.html";
-// })
-  // var x = rootRef.orderByChild("email").equalTo(user);
-  // console.log(x.getValue());
-    // rootRef.on("child_added", snap => {
-    //   var name = snap.child("Name").val();
-    //   var email = snap.child("Email").val();
-    //
-    //   // $("#tableBody").append("<tr><td>" + name + "</td><td>" + email + "</td><td><button>Remove</button></td></tr>");
-    //   $("#tableBody").append("<tr><td>" + name + "</td><td>" + email + "</td><td><button>Remove</button></td></tr>");
-    // })
-
-// })
-// 7b92aff4

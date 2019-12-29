@@ -12,8 +12,12 @@
     <div class="text-center">
         <h1>Check Patients</h1>
     </div>
-    <a href="#" id="logoutButton">Logout</a>
-    <!-- {% if data %} -->
+    <div class="text-right">
+      <div class="mr-5">
+        <a href="#" id="logoutButton">Logout</a>
+      </div>
+    </div>
+    <div class="text-center">
       <table class="table table-striped text-center">
         <thead>
           <tr>
@@ -23,13 +27,8 @@
         <tbody id="tableBody">
 
         </tbody>
-          <!-- {% for patient in data %} -->
-          <!-- <tr>
-              <!-- <td><a href="{{url_for('displayPatient', patientId=patient['pID'])}}">{{patient['name']}}</a></td> -->
-          <!-- </tr> -->
-          <!-- {% endfor %} -->
       </table>
-    <!-- {% endif %} -->
+    </div>
     <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-auth.js"></script>

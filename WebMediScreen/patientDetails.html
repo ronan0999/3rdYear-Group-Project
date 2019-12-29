@@ -13,55 +13,23 @@
         <div class="text-center">
             <h1>Patient Details</h1>
         </div>
-        <a href="#" id="logoutButton">Logout</a><br>
-        <!-- {% if patientData %} -->
-        <table border="1">
-          <thead>
-            <tr>
-                <th colspan="2">Details</th>
-            </tr>
-          </thead>
-          <tbody id="patientInfo">
+        <div class="text-right">
+          <a href="#" id="logoutButton">Logout</a><br>
+        </div>
+        <div class="mx-auto">
+          <table class ="table table-bordered">
+            <thead>
+              <tr>
+                  <th class ="text-center" colspan="2">Details</th>
+              </tr>
+            </thead>
+            <tbody id="patientInfo">
 
-          </tbody>
-            <!-- <tr>
-                <th>Name</th>
-                <td>{{patientData['name']}}</td>
-            </tr>
-            <tr>
-                <th>Age</th>
-                <td>{{patientData['age']}}</td>
-            </tr>
-            <tr>
-                <th>Date of Birth</th>
-                <td>{{patientData['dob']}}</td>
-            </tr>
-            <tr>
-                <th>Insurance Name</th>
-                <td>{{patientData['insurancename']}}</td>
-            </tr>
-            <tr>
-                <th>Phone number</th>
-                <td>{{patientData['phone']}}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{patientData['email']}}</td>
-            </tr>
-            <tr>
-                <th colspan="2">Medical History</th>
-            </tr>
-            <!-- {% for question, answer in patientData['medicalhistory'].items() %} -->
-                <!-- <tr>
-                    <th>{{question}}</th>
-                    <td>{{answer}}</td>
-                </tr> -->
-            <!-- {% endfor %} -->
-        </table>
-        <!-- {% endif %} -->
-        <!-- <form method="POST" action="{{url_for('diabetesRisk', patientId=patientData['pID'])}}" id="aiForm">
-            <button type="Submit" value="diabetesRisk" form="aiForm">Check Diabetes Risk</button>
-        </form> -->
+            </tbody>
+
+          </table>
+        </div>
+
     </div>
     <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/7.5.2/firebase-database.js"></script>
@@ -88,26 +56,26 @@
           window.location.href = "index.html";
         }
         else {
+          // Getting the id from the url
           var queryString = decodeURIComponent(window.location.search);
           queryString = queryString.substring(1);
           var queries = queryString.split("&");
-          console.log(queries[0].substring(6));
+
           var id = queries[0].substring(6)
           var patient = null;
+          // getting the patient from the database using the id
           var rootRef = firebase.database().ref().child("patients");
           rootRef.on('value', function(snapshot){
-            console.log(Object.values(snapshot.val()));
             Object.values(snapshot.val()).forEach(value=>{
               if (value.pID == id) {
                 patient = value;
-                // console.log(patient);
+
                 appendDetails(patient);
-                // break;
+
               }
             })
           })
-          function appendDetails(patient){
-            console.log("Finally");
+          function appendDetails(patient){  // displays details of the patient
             $("#patientInfo").append(
             "<tr><th>Name</th><td>" + patient.name + "</td></tr><tr><th>Age</th><td>" + patient.age +
             "</td></tr><tr><th>Date of Birth</th><td>" + patient.dob + "</td></tr><tr><th>Insurance Name</th><td>" +
